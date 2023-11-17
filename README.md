@@ -2,6 +2,10 @@
 
 Zync OS is a mock-up bootloader-only dummy operating system. It has a very basic boring shell.
 
+<p align="center">
+    <img src="assets/zync-os.png" width="90%" />
+</p>
+
 ## Getting Started
 
 To build Zync OS, simply execute the following commands:

@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
     - uses: ilammy/setup-nasm@v1
-    - uses: actions/checkout@v1
+
     - name: Build NASM Code
       run: |
         nasm bootloader/bootloader.asm -f bin -o dist/bootloader.bin

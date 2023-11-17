@@ -1,5 +1,8 @@
 # Zync OS: Nothing Operating System
 
+![NASM Build](https://github.com/nthnn/Zync-OS/actions/workflows/nasm_build.yml/badge.svg)
+![GitHub repo size](https://img.shields.io/github/repo-size/nthnn/Zync-OS?logo=git&label=Repository%20Size)
+
 Zync OS is a mock-up bootloader-only dummy operating system. It has a very basic boring shell.
 
 <p align="center">

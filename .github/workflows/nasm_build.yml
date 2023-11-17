@@ -14,8 +14,6 @@ jobs:
     - uses: actions/checkout@v1
       with:
         version: '2.16.01'
-
-    - name: Build NASM Code
       run: |
         nasm bootloader/bootloader.asm -f bin -o dist/bootloader.bin
         cp dist/bootloader.bin dist/zync_os.img

@@ -90,25 +90,35 @@ shell:
 
     mov si, input_buffer
     call getInput
+
     mov di, si
+    mov di, str_clear_cmd
+
+    repe cmpsb
+    cmp byte [di], 0
+    jne .invalidCommand
 
     mov si, str_nline
     call printString
 
-    mov si, di
-    call printString
+    call clearScreen
+    jmp .shellEnd
 
+.invalidCommand:
     mov si, str_nline
     call printString
 
-    mov si, str_nline
+    mov si, str_invalid_cmd
     call printString
 
+.shellEnd:
     jmp shell
 
-str_greet:      db 'Zync OS (Shell) v0.0.1', ENDL, ENDL, 0
-str_shell:      db '%> ', 0
-str_nline:      db '', ENDL, 0
+str_greet:          db 'Zync OS (Shell) v0.0.1', ENDL, ENDL, 0
+str_shell:          db '%> ', 0
+str_nline:          db '', ENDL, 0
+str_clear_cmd:      db 'clear', 0
+str_invalid_cmd:    db 'Invalid command', ENDL, ENDL, 0
 
 input_buffer: times 100 db 0
 

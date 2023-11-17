@@ -5,3 +5,5 @@
 %define PRINT_STRING    0x0E
 %define CLEAR_SCREEN    0x0600
 %define CARET_POSITION  0x0200
+
+%define ENDL            0x0D, 0x0A

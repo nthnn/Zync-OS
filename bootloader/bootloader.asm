@@ -106,9 +106,9 @@ shell:
 
     jmp shell
 
-str_greet: db 'Zync OS (Shell) v0.0.1', ENDL, ENDL, 0
-str_shell: db '%> ', 0
-str_nline: db '', ENDL, 0
+str_greet:      db 'Zync OS (Shell) v0.0.1', ENDL, ENDL, 0
+str_shell:      db '%> ', 0
+str_nline:      db '', ENDL, 0
 
 input_buffer: times 100 db 0
 

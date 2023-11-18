@@ -1,0 +1,20 @@
+{
+  "name": "zync-os",
+  "version": "0.0.1",
+  "description": "A mock-up bootloader-only dummy operating system with a very basic shell.",
+  "main": " ",
+  "scripts": {
+    "build_bootloader": "mkdir -p dist && nasm bootloader/bootloader.asm -f bin -o dist/bootloader.bin && cp dist/bootloader.bin dist/zync_os.img && truncate -s 1440k dist/zync_os.img",
+    "emulate": "qemu-system-x86_64 -serial stdio -drive file=dist/zync_os.img,format=raw,index=0,media=disk",
+    "clean": "rm -rf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nthnn/Zync-OS.git"
+  },
+  "author": "nthnn",
+  "bugs": {
+    "url": "https://github.com/nthnn/Zync-OS/issues"
+  },
+  "homepage": "https://github.com/nthnn/Zync-OS#readme"
+}

@@ -1,1 +1,0 @@
-rm -rf dist/bootloader.bin dist/zync_os.img

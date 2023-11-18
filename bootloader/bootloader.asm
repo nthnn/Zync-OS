@@ -1,4 +1,4 @@
-%include "bootloader/constants.asm"
+%include "bootloader/defs.asm"
 
 org ORIGIN_ADDR
 bits BTLDR_BITS

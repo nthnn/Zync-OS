@@ -3,6 +3,8 @@
 org ORIGIN_ADDR
 bits BTLDR_BITS
 
+%include "bootloader/fat12.asm"
+
 start:
     mov ax, 0
     mov ds, ax
@@ -11,116 +13,140 @@ start:
     mov ss, ax
     mov sp, 0x7C00
 
-    call clearScreen
+    push es
+    push word .after
+    retf
 
-    mov si, str_greet
+.after:
+    mov [disk_drive_number], dl
+    mov si, str_loading
     call printString
 
-    call shell
+    push es
+    mov ah, 08h
+    int 13h
+    jc floppyDiskError
+    pop es
+
+    and cl, 0x3F
+    xor ch, ch
+    mov [disk_sectors_per_track], cx
+
+    inc dh
+    mov [disk_heads], dh
+
+    mov ax, [disk_sectors_per_fat]
+    mov bl, [disk_fat_count]
+    xor bh, bh
+    mul bx
+    add ax, [disk_reserved_sectors]
+    push ax
+
+    mov ax, [disk_dir_entries_count]
+    shl ax, 5
+    xor dx, dx
+    div word [disk_bytes_per_sector]
+
+    test dx, dx
+    jz .rootDirAfter
+    inc ax
+
+.rootDirAfter:
+    mov cl, al
+    pop ax
+    mov dl, [disk_drive_number]
+    mov bx, buffer
+    call diskRead
+
+    xor bx, bx
+    mov di, buffer
+
+.searchKernel:
+    mov si, str_file_kernel_bin
+    mov cx, 11
+    push di
+    repe cmpsb
+
+    pop di
+    je .foundKernel
+
+    add di, 32
+    inc bx
+
+    cmp bx, [disk_dir_entries_count]
+    jl .searchKernel
+
+    jmp noKernelFound
+
+.foundKernel:
+    mov ax, [di + 26]
+    mov [kernel_cluster], ax
+
+    mov ax, [disk_reserved_sectors]
+    mov bx, buffer
+    mov cl, [disk_sectors_per_fat]
+    mov dl, [disk_drive_number]
+    call diskRead
+
+    mov bx, KERNEL_LOAD_SEGMENT
+    mov es, bx
+    mov bx, KERNEL_LOAD_OFFSET
+
+.loadKernel:
+    mov ax, [kernel_cluster]
+    add ax, 31
+
+    mov cl, 1
+    mov dl, [disk_drive_number]
+    call diskRead
+
+    add bx, [disk_bytes_per_sector]
+
+    mov ax, [kernel_cluster]
+    mov cx, 3
+    mul cx
+    mov cx, 2
+    div cx
+
+    mov si, buffer
+    add si, ax
+    mov ax, [ds:si]
+
+    or dx, dx
+    jz .even
+
+.odd:
+    shr ax, 4
+    jmp .nextCluster
+
+.even:
+    and ax, 0x0FFF
+
+.nextCluster:
+    cmp ax, 0x0FF8
+    jae .finish
+
+    mov [kernel_cluster], ax
+    jmp .loadKernel
+
+.finish:
+    mov dl, [disk_drive_number]
+
+    mov ax, KERNEL_LOAD_SEGMENT
+    mov ds, ax
+    mov es, ax
+
+    jmp KERNEL_LOAD_SEGMENT:KERNEL_LOAD_OFFSET
+    jmp waitKeyReboot
+
+    cli
     hlt
 
-.halt:
-    jmp .halt
-
-clearScreen:
-    mov ax, CLEAR_SCREEN
-    mov bh, 0x07
-    mov cx, 0
-    mov dx, 0x184F
-    int VIDEO_INT
-
-    mov ax, CARET_POSITION
-    xor bh, bh
-    xor dh, dh
-    xor dl, dl
-    int VIDEO_INT
-
-    ret
-
-printString:
-    push si
-    push ax
-    push bx
-
-.loop:
-    lodsb
-    or al, al
-    jz .done
-
-    mov ah, 0x0E
-    mov bh, 0
-    int 0x10
-
-    jmp .loop
-
-.done:
-    pop bx
-    pop ax
-    pop si   
-    ret
-
-getInput:
-    mov di, si
-    mov cx, 0
-
-.readKey:
-    mov ah, 0
-    int 0x16
-
-    cmp al, 0x0D
-    je .inputDone
-
-    mov ah, 0x0E
-    mov bh, 0
-    int 0x10
-
-    mov [di], al
-    inc di
-    inc cx
-
-    jmp .readKey
-
-.inputDone:
-    mov byte [di], 0
-    ret
-
-shell:
-    mov si, str_shell
-    call printString
-
-    mov si, input_buffer
-    call getInput
-
-    mov di, si
-    mov di, str_clear_cmd
-
-    repe cmpsb
-    cmp byte [di], 0
-    jne .invalidCommand
-
-    mov si, str_nline
-    call printString
-
-    call clearScreen
-    jmp .shellEnd
-
-.invalidCommand:
-    mov si, str_nline
-    call printString
-
-    mov si, str_invalid_cmd
-    call printString
-
-.shellEnd:
-    jmp shell
-
-str_greet:          db 'Zync OS (Shell) v0.0.1', ENDL, ENDL, 0
-str_shell:          db '%> ', 0
-str_nline:          db '', ENDL, 0
-str_clear_cmd:      db 'clear', 0
-str_invalid_cmd:    db 'Invalid command', ENDL, ENDL, 0
-
-input_buffer: times 100 db 0
+%include "bootloader/print_string.asm"
+%include "bootloader/disk_util.asm"
+%include "bootloader/constants.asm"
 
 times 510-($-$$) db 0
 dw 0AA55h
+
+buffer:

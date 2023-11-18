@@ -1,7 +1,7 @@
 {
   "name": "zync-os",
   "version": "0.0.2",
-  "description": "A mock-up bootloader-only dummy operating system with a very basic shell.",
+  "description": "A mock-up bootloader and kernel-only dummy operating system with a very basic shell.",
   "main": " ",
   "scripts": {
     "bootloader": "mkdir -p dist && nasm bootloader/bootloader.asm -f bin -o dist/bootloader.bin",

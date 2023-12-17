@@ -7,13 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.8.0'
+      - name: Install Golang
+        run: sudo apt-get install -y golang
 
-      - name: Install nasm
+      - name: Install NASM
         run: sudo apt-get install -y nasm
 
       - name: Install mtools
@@ -22,8 +19,11 @@ jobs:
       - name: Install DOS-FS tools
         run: sudo apt-get install -y dosfstools
 
+      - name: Install Qrepo
+        run: sh -c "$(curl -fsSL https://raw.githubusercontent.com/nthnn/Qrepo/master/support/install.sh)"
+
       - name: Build OS image
-        run: npm run build
+        run: qrepo run build
 
       - name: Clean up build
-        run: npm run clean
+        run: qrepo run clean

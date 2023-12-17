@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - name: Install Golang
-        run: brew install golang@1.21
+        run: brew install go@1.21
 
       - name: Install NASM
         run: brew install nasm

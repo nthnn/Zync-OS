@@ -4,22 +4,21 @@ on: [push]
 
 jobs:
   build:
-    runs-on: macos-latest
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Install Golang
-        run: |
-          brew unlink go@1.20
-          brew install go@1.21
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.2'
 
       - name: Install NASM
-        run: brew install nasm
+        run: sudo apt-get install -y nasm
 
       - name: Install mtools
-        run: brew install mtools
+        run: sudo apt-get install -y mtools
 
       - name: Install DOS-FS tools
-        run: brew install dosfstools
+        run: sudo apt-get install -y dosfstools
 
       - name: Install Qrepo
         run: sh -c "$(curl -fsSL https://raw.githubusercontent.com/nthnn/Qrepo/master/support/install.sh)"

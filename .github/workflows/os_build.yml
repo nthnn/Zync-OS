@@ -7,9 +7,6 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Install Golang
-        run: brew install golang
-
       - name: Install NASM
         run: brew install nasm
 

@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - name: Install Golang
-        run: sudo apt-get install -y golang
+        run: sudo apt-get install -y golang=1.21.2
 
       - name: Install NASM
         run: sudo apt-get install -y nasm

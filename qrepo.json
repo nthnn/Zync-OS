@@ -1,0 +1,33 @@
+{
+	"name": "Zync-OS",
+	"author": "nthnn",
+	"git": "https://github.com/nthnn/Zync-OS.git",
+	"scripts": {
+		"bootloader": [
+			"mkdir -p dist",
+			"nasm bootloader/bootloader.asm -f bin -o dist/bootloader.bin"
+		],
+		"kernel": [
+			"mkdir -p dist",
+			"nasm kernel/main.asm -f bin -o dist/kernel.bin"
+		],
+		"generate": [
+			"dd if=/dev/zero of=dist/zync_os.img bs=512 count=2880",
+			"mkfs.fat -F 12 -n \"ZOS\" dist/zync_os.img",
+			"dd if=dist/bootloader.bin of=dist/zync_os.img conv=notrunc",
+			"mcopy -i dist/zync_os.img dist/kernel.bin \"::kernel.bin\""
+		],
+		"build": [
+			"qrepo run clean",
+			"qrepo run bootloader",
+			"qrepo run kernel",
+			"qrepo run generate"
+		],
+		"emulate": [
+			"qemu-system-i386 -m 1048 -serial stdio -fda dist/zync_os.img"
+		],
+		"clean": [
+			"rm -rf dist"
+		]
+	}
+}

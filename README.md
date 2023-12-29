@@ -16,8 +16,8 @@ To build and run Zync OS, simply execute the following commands:
 ```zsh
 git clone https://github.com/nthnn/Zync-OS.git && cd Zync-OS
 mkdir dist
-npm run build
-npm run emulate
+qrepo run build
+qrepo run emulate
 ```
 
 ## License
